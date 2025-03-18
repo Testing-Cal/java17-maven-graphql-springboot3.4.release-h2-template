@@ -47,7 +47,7 @@ jobs:
           echo "${{ env.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
           
       - name: Deploy to Kubernetes
-        if: env.ACTION == "DEPLOY"
+        if: env.ACTION == 'DEPLOY'
         run: |
            echo "DOCKER_LOGIN_URL=$(echo "$REGISTRY_URL" | cut -d'/' -f1)" >> "$GITHUB_ENV"
            docker run --rm  --user root -v "$HOME/.kube/config":"/.kube/config" -e KUBECONFIG="/.kube/config" $KUBECTL_IMAGE_VERSION create ns "$KUBE_NAMESPACE" || true
