@@ -68,7 +68,7 @@ jobs:
            then
              ## hardcoded name regcred need to be change
              docker run --rm  --user root -v "$HOME/.kube/config":"/.kube/config" -e KUBECONFIG="/.kube/config" $KUBECTL_IMAGE_VERSION -n "$KUBE_NAMESPACE" delete secret regcred --ignore-not-found || true
-             docker run --rm  --user root -v "$HOME/.kube/config":"/.kube/config" -e KUBECONFIG="/.kube/config" $KUBECTL_IMAGE_VERSION -n "$KUBE_NAMESPACE" create secret docker-registry regcred --docker-server="$DOCKER_LOGIN_URL" --docker-username=${{ secrets[env.ARTIFACTORY_USER_SECRET] }} --docker-password=${{ secrets[env.ARTIFACTORY_PASSWORD_SECRET] }} || true
+             docker run --rm  --user root -v "$HOME/.kube/config":"/.kube/config" -e KUBECONFIG="/.kube/config" $KUBECTL_IMAGE_VERSION -n "$KUBE_NAMESPACE" create secret docker-registry regcred --docker-server=$REGISTRY_URL --docker-username=${{ secrets[env.ARTIFACTORY_USER_SECRET] }} --docker-password=${{ secrets[env.ARTIFACTORY_PASSWORD_SECRET] }} || true
            fi
             
            echo "context: $CONTEXT" >> Helm.yaml
