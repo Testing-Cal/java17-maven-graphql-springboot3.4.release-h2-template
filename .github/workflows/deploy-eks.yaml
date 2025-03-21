@@ -101,6 +101,7 @@ jobs:
           echo "Job Name: ${GITHUB_JOB}"
           echo "Tenant ID: $TENANT_ID"
           echo "Target URI: $TARGET_URI"
+          curl -X GET '$TARGET_URI/devopsorchestrator/actuator/health'
           if [[ $TENANT_ID != "" && $TARGET_URI != "" ]];then 
                 curl -k -X POST '$TARGET_URI/collector/orchestrator/devops/details' \
                   -H 'X-TenantID: $TENANT_ID' \
