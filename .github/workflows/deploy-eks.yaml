@@ -16,16 +16,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
       - name: Check Internet Connectivity
-        run: ping -c 4 google.com
+        if: always()
+        run: ping -c 4 google.com || true
 
       - name: Debug curl with verbose
-        run: curl -v https://example.com
+        if: always()
+        run: curl -v https://example.com || true
 
       - name: Curl with no SSL verification (temporary)
-        run: curl -k https://example.com
+        if: always()
+        run: curl -k https://example.com || true
 
       - name: Debug Environment Variables
-        run: env | sort
+        run: env | sort || true
           
       - name: Initialization
         run: |
