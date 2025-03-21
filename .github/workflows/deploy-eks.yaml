@@ -101,7 +101,7 @@ jobs:
           echo "Job Name: ${GITHUB_JOB}"
           if [[ $TENANT_ID == "" && $TARGET_URI == "" ]];then 
                 curl -k -X POST '$TARGET_URI/collector/orchestrator/devops/details' \
-                  -H 'X-TenantID: $TENANT_ID \
+                  -H 'X-TenantID: $TENANT_ID' \
                   -H 'Content-Type: application/json'\
                   -d '{
                         "workflowName": "'"${GITHUB_WORKFLOW}"'",
