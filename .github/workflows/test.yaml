@@ -23,10 +23,7 @@ jobs:
           echo "Workflow Name: ${GITHUB_WORKFLOW}"
           echo "Github Repository: ${GITHUB_REPOSITORY}"
           echo "Job Name: ${GITHUB_JOB}"
-          curl -X POST "https://example.com/api/job/trigger" \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer $AGENT_API_KEY" \
-          -d '{
+          echo '{
             "workflowName": "'"${GITHUB_WORKFLOW}"'",
             "workflowId": "'"${GITHUB_RUN_ID}"'",
             "workflowNumber": "'"${GITHUB_RUN_ID}"'",
@@ -35,7 +32,12 @@ jobs:
             "devopsConfigId": "'"${DEVOPS_CONFIG_ID}"'",
             "agentApiKey": "'"${AGENT_API_KEY}"'",
             "buildNumber": "'"${GITHUB_RUN_NUMBER}"'"
-          }'
+          }' > file.txt
+          cat file.txt
+          #curl -X POST "https://example.com/api/job/trigger" \
+          #-H "Content-Type: application/json" \
+          #-H "Authorization: Bearer $AGENT_API_KEY" \
+
 
           
           
