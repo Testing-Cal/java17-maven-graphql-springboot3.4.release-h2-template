@@ -15,11 +15,27 @@ jobs:
         if: always()
         run: |
           echo "post action"
+          export AGENT_API_KEY="agentapikey"
+          export AGENT_ID="1123"
+          export DEVOPS_CONFIG_ID="33ddvcfvcc"
           echo "Workflow Run ID: ${GITHUB_RUN_ID}"
           echo "Workflow Run Number: ${GITHUB_RUN_NUMBER}"
           echo "Workflow Name: ${GITHUB_WORKFLOW}"
           echo "Github Repository: ${GITHUB_REPOSITORY}"
           echo "Job Name: ${GITHUB_JOB}"
+          curl -X POST "https://example.com/api/job/trigger" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $AGENT_API_KEY" \
+          -d '{
+            "workflowName": "'"${GITHUB_WORKFLOW}"'",
+            "workflowId": "'"${GITHUB_RUN_ID}"'",
+            "workflowNumber": "'"${GITHUB_RUN_ID}"'",
+            "repo": "'"${GITHUB_REPOSITORY}"'",
+            "agentId": "'"${AGENT_ID}"'",
+            "devopsConfigId": "'"${DEVOPS_CONFIG_ID}"'",
+            "agentApiKey": "'"${AGENT_API_KEY}"'",
+            "buildNumber": "'"${GITHUB_RUN_NUMBER}"'"
+          }'
 
           
           
