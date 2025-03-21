@@ -15,20 +15,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Check Internet Connectivity
-        if: always()
-        run: ping -c 4 lazsa-dis.calibo.com || true
-
-      - name: Debug curl with verbose
-        if: always()
-        run: curl -v https://lazsa-dis.calibo.com/devopsorchestrator/actuator/health || true
-
-      - name: Curl with no SSL verification (temporary)
-        if: always()
-        run: curl -k https://lazsa-dis.calibo.com/devopsorchestrator/actuator/health || true
-
-      - name: Debug Environment Variables
-        run: env | sort || true
           
       - name: Initialization
         run: |
@@ -115,7 +101,7 @@ jobs:
           echo "Job Name: ${GITHUB_JOB}"
           echo "Tenant ID: $TENANT_ID"
           echo "Target URI: $TARGET_URI"
-          curl -v https://lazsa-dis.calibo.com/devopsorchestrator/actuator/health
+          curl https://lazsa-dis.calibo.com/devopsorchestrator/actuator/health
           if [[ $TENANT_ID != "" && $TARGET_URI != "" ]];then 
                 curl -v -k -X POST "$TARGET_URI/collector/orchestrator/devops/details" \
                   -H 'X-TenantID: $TENANT_ID' \
