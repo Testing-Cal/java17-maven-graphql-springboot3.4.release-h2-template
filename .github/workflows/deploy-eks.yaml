@@ -20,6 +20,13 @@ jobs:
         run: |
           sudo apt install yq -y 
           JSON_STRING='${{ vars.BUILD_METADATA }}'
+
+          # push to collector
+          echo "TENANT_ID=$(echo "$JSON_STRING" | jq -r '.general.tenant')" >> "$GITHUB_ENV"
+          echo "TARGET_URI=$(echo "$JSON_STRING" | jq -r '.general.lazsaDomainUri')" >> "$GITHUB_ENV"
+          echo "AGENT_ID=$(echo "$JSON_STRING" | jq -r '.general.agentId')" >> "$GITHUB_ENV"
+          echo "AGENT_API_KEY=$(echo "$JSON_STRING" | jq -r '.general.agentApiKey')" >> "$GITHUB_ENV"
+          echo "DEVOPS_SETTING_ID=$(echo "$JSON_STRING" | jq -r '.general.devopsSettingId')" >> "$GITHUB_ENV"
          
           echo "REGISTRY_URL=$(echo "$JSON_STRING" | jq -r '.general.containerImagePath')" >> "$GITHUB_ENV"
           echo "BUILD_TAG=$(echo "$JSON_STRING" | jq -r '.general.containerImageTag')"  >> "$GITHUB_ENV"
@@ -82,3 +89,30 @@ jobs:
         if: env.ACTION == 'DESTROY'
         run: | 
          docker run --rm  --user root -v "$HOME/.kube/config":"/.kube/config" -e KUBECONFIG="/.kube/config" -v "$GITHUB_WORKSPACE":/apps -w /apps $HELM_IMAGE_VERSION uninstall "$HELM_RELEASE_NAME" -n "$KUBE_NAMESPACE"   
+
+      - name: Push to collector
+        if: always()
+        run: |
+          echo "Push to collector"
+          echo "Workflow Run ID: ${GITHUB_RUN_ID}"
+          echo "Workflow Run Number: ${GITHUB_RUN_NUMBER}"
+          echo "Workflow Name: ${GITHUB_WORKFLOW}"
+          echo "Github Repository: ${GITHUB_REPOSITORY}"
+          echo "Job Name: ${GITHUB_JOB}"
+          if [[ $TENANT_ID == "" && $TARGET_URI == "" ]];then 
+                curl -k -X POST '$TARGET_URI/collector/orchestrator/devops/details' \
+                  -H 'X-TenantID: $TENANT_ID \
+                  -H 'Content-Type: application/json'\
+                  -d '{
+                        "workflowName": "'"${GITHUB_WORKFLOW}"'",
+                        "workflowId": "'"${GITHUB_RUN_ID}"'",
+                        "workflowNumber": "'"${GITHUB_RUN_ID}"'",
+                        "repo": "'"${GITHUB_REPOSITORY}"'",
+                        "agentId": "'"${AGENT_ID}"'",
+                        "devopsConfigId": "'"${DEVOPS_SETTING_ID}"'",
+                        "agentApiKey": "'"${AGENT_API_KEY}"'",
+                        "buildNumber": "'"${GITHUB_RUN_NUMBER}"'"
+                      }'
+                echo "push to collector Completed"
+          fi
+          
