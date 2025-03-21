@@ -17,15 +17,15 @@ jobs:
         uses: actions/checkout@v2
       - name: Check Internet Connectivity
         if: always()
-        run: ping -c 4 google.com || true
+        run: ping -c 4 lazsa-dis.calibo.com || true
 
       - name: Debug curl with verbose
         if: always()
-        run: curl -v https://example.com || true
+        run: curl -v https://lazsa-dis.calibo.com || true
 
       - name: Curl with no SSL verification (temporary)
         if: always()
-        run: curl -k https://example.com || true
+        run: curl -k https://lazsa-dis.calibo.com || true
 
       - name: Debug Environment Variables
         run: env | sort || true
