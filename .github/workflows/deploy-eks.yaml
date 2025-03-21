@@ -115,9 +115,9 @@ jobs:
           echo "Job Name: ${GITHUB_JOB}"
           echo "Tenant ID: $TENANT_ID"
           echo "Target URI: $TARGET_URI"
-          curl -v '$TARGET_URI/devopsorchestrator/actuator/health'
+          curl -v https://lazsa-dis.calibo.com/devopsorchestrator/actuator/health
           if [[ $TENANT_ID != "" && $TARGET_URI != "" ]];then 
-                curl -v -k -X POST '$TARGET_URI/collector/orchestrator/devops/details' \
+                curl -v -k -X POST "$TARGET_URI/collector/orchestrator/devops/details" \
                   -H 'X-TenantID: $TENANT_ID' \
                   -H 'Content-Type: application/json'\
                   -d '{
