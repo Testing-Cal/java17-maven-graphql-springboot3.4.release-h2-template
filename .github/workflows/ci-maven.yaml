@@ -1,5 +1,9 @@
 name: CI-Dev
-on: [push,workflow_dispatch]
+on: 
+ push:
+     paths-ignore:
+      - '.github/workflows/**'
+ workflow_dispatch:
 
 jobs:
   continuous-integration:
