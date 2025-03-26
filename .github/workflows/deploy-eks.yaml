@@ -1,4 +1,4 @@
-name: Deploy-to-EKS-Dev
+name: Deploy-2-EKS-Dev
 
 on: [workflow_dispatch]
 
