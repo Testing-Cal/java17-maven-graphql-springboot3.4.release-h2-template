@@ -7,7 +7,7 @@ on:
 
 jobs:
   continuous-integration:
-    runs-on: ""
+    runs-on: "ubuntu-latest"
     environment:
       name: Dev
     env:
