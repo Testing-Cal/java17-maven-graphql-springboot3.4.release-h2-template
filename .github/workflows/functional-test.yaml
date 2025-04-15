@@ -74,21 +74,21 @@ jobs:
           
       - name: functional testing
         run: |
-          host=""
+          liveurl=""
           if [ "$DEPLOYMENT_TYPE" = "KUBERNETES" ]; then    
             if [[ $INGRESS_HOST != 'null' ]]; then      
-              host="$INGRESS_HOST"
+              liveurl="$INGRESS_HOST"
             else
-              host="$INGRESS_ADDRESS"
+              liveurl="$INGRESS_ADDRESS"
             fi
-            echo "host in kubernetes: $host"
+            echo "liveurl in kubernetes: $liveurl"
           elif [ "$DEPLOYMENT_TYPE" = "EC2" ]; then
-            host="$DOCKERHOST:$SERVICE_PORT"
-            echo "host in ec2: $host"
+            liveurl="$DOCKERHOST:$SERVICE_PORT"
+            echo "liveurl in ec2: $liveurl"
           fi
         
-          echo "SITE_URL under test: http://$host$CONTEXT/"
-          echo "$host"
+          echo "SITE_URL under test: http://$liveurl$CONTEXT/"
+          echo "$liveurl"
           
 
           runSeleniumTest() {  
@@ -112,11 +112,11 @@ jobs:
               *env*)
                   # Do stuff
                   echo 'case env'
-                  $env.TESTCASECOMMAND applicationUrl=http://${host}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
+                  $env.TESTCASECOMMAND applicationUrl=http://${liveurl}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
                   ;;
               *)
                   echo 'case else'
-                  $env.TESTCASECOMMAND -- --env applicationUrl=http://${host}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
+                  $env.TESTCASECOMMAND -- --env applicationUrl=http://${liveurl}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
                   ;;
             esac
             npx mochawesome-merge mochawesome-report/*.json > mochawesome-report/output.json
@@ -132,10 +132,10 @@ jobs:
           cd testcaseRepo
           if [[ env.TESTINGTOOLTYPE == 'selenium' ]] 
           then
-              runSeleniumTest()                           
+              runSeleniumTest                           
           else if [[ env.TESTINGTOOLTYPE == 'cypress' ]] 
           then
-              runCypressTest()
+              runCypressTest
           fi
           
   
