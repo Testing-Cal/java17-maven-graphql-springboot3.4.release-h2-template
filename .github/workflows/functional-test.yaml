@@ -68,7 +68,7 @@ jobs:
       - name: Checkout testcase repo
         uses: actions/checkout@v2
         with:
-          repository: Testing-Cal/selenium-framework-java.git
+          repository: Testing-Cal/selenium-framework-java
           ref: $TESTCASEREPOSITORYBRANCH
           path: ./testcaseRepo
           
