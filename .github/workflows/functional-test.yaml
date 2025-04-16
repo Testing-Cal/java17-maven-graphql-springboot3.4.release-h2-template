@@ -159,7 +159,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: html-report
-          path: mochawesome-report
+          path: testcaseRepo/mochawesome-report
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v1
