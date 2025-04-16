@@ -166,7 +166,7 @@ jobs:
           path: ${{ env.REPORT_PATH }}
 
       - name: Publish Test Results
-        if: env.TESTINGTOOLTYPE == "selenium"
+        if: env.TESTINGTOOLTYPE == 'selenium'
         uses: dorny/test-reporter@v1
         with:
           name: JUnit Tests
