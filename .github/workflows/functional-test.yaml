@@ -124,8 +124,8 @@ jobs:
             echo "mywork: $GITHUB_WORKSPACE"
             ls -al $GITHUB_WORKSPACE/
             ls -al $GITHUB_WORKSPACE/testcaseRepo/
-            docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/bash ls -al
-            docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/bash test.sh > test.out || true
+            docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/bash -c "ls -al"
+            docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/bash -c "./test.sh > test.out || true"
             cat test.out
       
             awk 'BEGIN { for(i=1;i<=5;i++) printf "*+"; } 
