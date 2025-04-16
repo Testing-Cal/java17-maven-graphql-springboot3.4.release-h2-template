@@ -98,7 +98,7 @@ jobs:
           }
       
           runCypressTest() {
-            cat <<EOL > testcaseRepo/test.sh
+            cat <<EOL > test.sh
           #!/bin/bash
           
           rm -rf node_modules/ mochawesome-report/ cypress/videos/ cypress/screenshots/
@@ -120,7 +120,7 @@ jobs:
           npx mochawesome-merge mochawesome-report/*.json > mochawesome-report/output.json
           npx marge mochawesome-report/output.json mochawesome-report --inline
           EOL
-            chmod +x testcaseRepo/test.sh
+            chmod +x test.sh
             echo "mywork: $GITHUB_WORKSPACE"
             ls -al $GITHUB_WORKSPACE/
             ls -al $GITHUB_WORKSPACE/testcaseRepo/
