@@ -76,14 +76,14 @@ jobs:
       - name: Functional Testing
         run: |
           liveurl=""
-          if [ "$DEPLOYMENT_TYPE" = "KUBERNETES" ]; then    
+          if [[ "$DEPLOYMENT_TYPE" = "KUBERNETES" ]]; then    
             if [[ "$INGRESS_HOST" != "null" ]]; then      
               liveurl="$INGRESS_HOST"
             else
               liveurl="$INGRESS_ADDRESS"
             fi
             echo "liveurl in kubernetes: $liveurl"
-          elif [ "$DEPLOYMENT_TYPE" = "EC2" ]; then
+          elif [[ "$DEPLOYMENT_TYPE" = "EC2" ]]; then
             liveurl="$DOCKERHOST:$SERVICE_PORT"
             echo "liveurl in ec2: $liveurl"
           fi
