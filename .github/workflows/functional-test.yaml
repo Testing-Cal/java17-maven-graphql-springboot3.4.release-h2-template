@@ -99,29 +99,29 @@ jobs:
           
           runCypressTest() {
             cat <<EOL > test.sh
-#!/bin/bash
-
-rm -rf node_modules/ mochawesome-report/ cypress/videos/ /cypress/screenshots/
-apt-get update
-apt-get install -y libgbm-dev
-npm install --save-dev mochawesome
-npm install mochawesome-merge --save-dev
-npm install
-
-case "$env.TESTCASECOMMAND" in
-  *env*)
-      # Do stuff
-      echo 'case env'
-      $env.TESTCASECOMMAND applicationUrl=http://${liveurl}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
-      ;;
-  *)
-      echo 'case else'
-      $env.TESTCASECOMMAND -- --env applicationUrl=http://${liveurl}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
-      ;;
-esac
-npx mochawesome-merge mochawesome-report/*.json > mochawesome-report/output.json
-npx marge mochawesome-report/output.json mochawesome-report  ./ --inline
-EOL
+          #!/bin/bash
+          
+          rm -rf node_modules/ mochawesome-report/ cypress/videos/ /cypress/screenshots/
+          apt-get update
+          apt-get install -y libgbm-dev
+          npm install --save-dev mochawesome
+          npm install mochawesome-merge --save-dev
+          npm install
+          
+          case "$env.TESTCASECOMMAND" in
+            *env*)
+                # Do stuff
+                echo 'case env'
+                $env.TESTCASECOMMAND applicationUrl=http://${liveurl}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
+                ;;
+            *)
+                echo 'case else'
+                $env.TESTCASECOMMAND -- --env applicationUrl=http://${liveurl}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
+                ;;
+          esac
+          npx mochawesome-merge mochawesome-report/*.json > mochawesome-report/output.json
+          npx marge mochawesome-report/output.json mochawesome-report  ./ --inline
+          EOL
        
             docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/sh test.sh > test.out || true
             cat test.out
