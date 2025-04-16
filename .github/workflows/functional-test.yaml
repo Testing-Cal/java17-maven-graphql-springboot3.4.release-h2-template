@@ -147,6 +147,7 @@ jobs:
           if [[ "$TESTINGTOOLTYPE" == "selenium" ]]; then
             runSeleniumTest
             echo "REPORT_PATH=testcaseRepo/target/surefire-reports" >> "$GITHUB_ENV"
+            echo "XML_REPORT_PATH=testcaseRepo/target/surefire-reports/*.xml" >> "$GITHUB_ENV"
           elif [[ "$TESTINGTOOLTYPE" == "cypress" ]]; then
             echo "current directory: $PWD"
             ls -al
@@ -165,8 +166,9 @@ jobs:
           path: ${{ env.REPORT_PATH }}
 
       - name: Publish Test Results
+        if: env.TESTINGTOOLTYPE == "selenium"
         uses: dorny/test-reporter@v1
         with:
           name: JUnit Tests
-          path: target/surefire-reports/*.xml
+          path: ${{ env.XML_REPORT_PATH }}
           reporter: java-junit
