@@ -98,7 +98,7 @@ jobs:
           }
       
           runCypressTest() {
-            cat <<EOL > test.sh
+            cat <<EOL > testcaseRepo/test.sh
           #!/bin/bash
           
           rm -rf node_modules/ mochawesome-report/ cypress/videos/ cypress/screenshots/
@@ -120,9 +120,10 @@ jobs:
           npx mochawesome-merge mochawesome-report/*.json > mochawesome-report/output.json
           npx marge mochawesome-report/output.json mochawesome-report --inline
           EOL
-      
+            chmod +x testcaseRepo/test.sh
             echo "mywork: $GITHUB_WORKSPACE"
             ls -al $GITHUB_WORKSPACE/
+            ls -al $GITHUB_WORKSPACE/testcaseRepo/
             docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/bash test.sh > test.out || true
             cat test.out
       
