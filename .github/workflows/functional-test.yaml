@@ -121,6 +121,8 @@ jobs:
           npx marge mochawesome-report/output.json mochawesome-report --inline
           EOL
       
+            echo "mywork: $GITHUB_WORKSPACE"
+            ls -al $GITHUB_WORKSPACE/
             docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/bash test.sh > test.out || true
             cat test.out
       
