@@ -72,71 +72,79 @@ jobs:
           ref: master
           path: ./testcaseRepo
           
-      - name: functional testing
-        run: |
-          liveurl=""
-          if [ "$DEPLOYMENT_TYPE" = "KUBERNETES" ]; then    
-            if [[ $INGRESS_HOST != 'null' ]]; then      
-              liveurl="$INGRESS_HOST"
-            else
-              liveurl="$INGRESS_ADDRESS"
-            fi
-            echo "liveurl in kubernetes: $liveurl"
-          elif [ "$DEPLOYMENT_TYPE" = "EC2" ]; then
-            liveurl="$DOCKERHOST:$SERVICE_PORT"
-            echo "liveurl in ec2: $liveurl"
-          fi
-        
-          echo "SITE_URL under test: http://$liveurl$CONTEXT/"
-          echo "$liveurl"
-          
+      - name: Functional Testing
+  run: |
+    liveurl=""
+    if [ "$DEPLOYMENT_TYPE" = "KUBERNETES" ]; then    
+      if [[ "$INGRESS_HOST" != "null" ]]; then      
+        liveurl="$INGRESS_HOST"
+      else
+        liveurl="$INGRESS_ADDRESS"
+      fi
+      echo "liveurl in kubernetes: $liveurl"
+    elif [ "$DEPLOYMENT_TYPE" = "EC2" ]; then
+      liveurl="$DOCKERHOST:$SERVICE_PORT"
+      echo "liveurl in ec2: $liveurl"
+    fi
 
-          runSeleniumTest() {  
-            env.TESTCASECOMMAND + " -DSITE_URL=http://${host}$CONTEXT/ > maven_test.out || true "
-            cat maven_test.out
-            cat maven_test.out | egrep "^\\[(INFO|ERROR)\\] Tests run: [0-9]+, Failures: [0-9]+, Errors: [0-9]+, Skipped: [0-9]+\$" | cut -c 8- | awk 'BEGIN { for(i=1;i<=5;i++) printf "*+"; } {printf "%s",\$0 } END { for(i=1;i<=5;i++) printf "*+"; }'
-          }
-          
-          runCypressTest() {
-            cat <<EOL > test.sh
-          #!/bin/bash
-          
-          rm -rf node_modules/ mochawesome-report/ cypress/videos/ /cypress/screenshots/
-          apt-get update
-          apt-get install -y libgbm-dev
-          npm install --save-dev mochawesome
-          npm install mochawesome-merge --save-dev
-          npm install
-          
-          case "$env.TESTCASECOMMAND" in
-            *env*)
-                # Do stuff
-                echo 'case env'
-                $env.TESTCASECOMMAND applicationUrl=http://${liveurl}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
-                ;;
-            *)
-                echo 'case else'
-                $env.TESTCASECOMMAND -- --env applicationUrl=http://${liveurl}$CONTEXT/ --browser $env.BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
-                ;;
-          esac
-          npx mochawesome-merge mochawesome-report/*.json > mochawesome-report/output.json
-          npx marge mochawesome-report/output.json mochawesome-report  ./ --inline
-          EOL
-       
-            docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/sh test.sh > test.out || true
-            cat test.out
-            awk 'BEGIN { for(i=1;i<=5;i++) printf "*+"; } /(^[ ]*✖.+(failed|pended|pending|skipped|skipping)|^[ ]*✔[ ]+All specs passed).+/ {for(i=4;i>=0;i--) switch (i) {case 4: if( \$(NF-i) ~ /^[0-9]/ ){printf aggr "Tests run: "\$(NF-i) aggr ", ";} else{printf "Tests run: 0, " ;}  break; case 3: if( \$(NF-i) ~ /^[0-9]/ ){printf aggr "Passed: "\$(NF-i) aggr ", "} else{printf "Passed: 0, "} break; case 2: if( \$(NF-i) ~ /^[0-9]/ ){printf aggr "Failures: " \$(NF-i) aggr ", "} else{printf "Failures: 0, "}  break; case 1: if( \$(NF-i) ~ /^[0-9]/ ){printf aggr "Pending: " \$(NF-i) aggr ", "} else{printf "Pending: 0, "} break; case 0: if( \$(NF-i) ~ /^[0-9]/ ){printf aggr "Skipped: " \$(NF-i)} else{printf "Skipped: 0"} break; }} END { for(i=1;i<=5;i++) printf "*+"; }' test.out
-            pwd
-          }
+    echo "SITE_URL under test: http://$liveurl$CONTEXT/"
+    echo "$liveurl"
 
-          cd testcaseRepo
-          if [[ env.TESTINGTOOLTYPE == 'selenium' ]] 
-          then
-              runSeleniumTest                           
-          else if [[ env.TESTINGTOOLTYPE == 'cypress' ]] 
-          then
-              runCypressTest
-          fi
+    runSeleniumTest() {  
+      $TESTCASECOMMAND -DSITE_URL=http://$liveurl$CONTEXT/ > maven_test.out || true
+      cat maven_test.out
+      grep "^\[INFO\|^\[ERROR\] Tests run: " maven_test.out | cut -c 8- | awk 'BEGIN { for(i=1;i<=5;i++) printf "*+"; } {printf "%s", $0 } END { for(i=1;i<=5;i++) printf "*+"; }'
+    }
+
+    runCypressTest() {
+      cat <<EOL > test.sh
+    #!/bin/bash
+    
+    rm -rf node_modules/ mochawesome-report/ cypress/videos/ cypress/screenshots/
+    apt-get update && apt-get install -y libgbm-dev
+    npm install --save-dev mochawesome mochawesome-merge
+    npm install
+    
+    case "$TESTCASECOMMAND" in
+      *env*)
+        echo 'case env'
+        \$TESTCASECOMMAND applicationUrl=http://$liveurl$CONTEXT/ --browser \$BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
+        ;;
+      *)
+        echo 'case else'
+        \$TESTCASECOMMAND -- --env applicationUrl=http://$liveurl$CONTEXT/ --browser \$BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
+        ;;
+    esac
+    
+    npx mochawesome-merge mochawesome-report/*.json > mochawesome-report/output.json
+    npx marge mochawesome-report/output.json mochawesome-report --inline
+    EOL
+
+      docker run -v "$GITHUB_WORKSPACE"/testcaseRepo:/app -w /app cypress/browsers:node14.19.0-chrome100-ff99-edge /bin/bash test.sh > test.out || true
+      cat test.out
+
+      awk 'BEGIN { for(i=1;i<=5;i++) printf "*+"; } 
+      /(^[ ]*✖.+(failed|pended|pending|skipped|skipping)|^[ ]*✔[ ]+All specs passed).+/ {
+        for(i=4;i>=0;i--) switch (i) {
+          case 4: if( $(NF-i) ~ /^[0-9]/ ){printf "Tests run: " $(NF-i) ", ";} else{printf "Tests run: 0, " ;}  break;
+          case 3: if( $(NF-i) ~ /^[0-9]/ ){printf "Passed: " $(NF-i) ", ";} else{printf "Passed: 0, "} break;
+          case 2: if( $(NF-i) ~ /^[0-9]/ ){printf "Failures: " $(NF-i) ", ";} else{printf "Failures: 0, "}  break;
+          case 1: if( $(NF-i) ~ /^[0-9]/ ){printf "Pending: " $(NF-i) ", ";} else{printf "Pending: 0, "} break;
+          case 0: if( $(NF-i) ~ /^[0-9]/ ){printf "Skipped: " $(NF-i)} else{printf "Skipped: 0"} break;
+        }
+      } END { for(i=1;i<=5;i++) printf "*+"; }' test.out
+
+      pwd
+    }
+
+    cd testcaseRepo
+    if [[ "$TESTINGTOOLTYPE" == "selenium" ]]; then
+      runSeleniumTest
+    elif [[ "$TESTINGTOOLTYPE" == "cypress" ]]; then
+      runCypressTest
+    fi
+  shell: bash
+
           
   
       - name: Upload HTML Report as Artifact
