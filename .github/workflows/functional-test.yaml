@@ -69,8 +69,8 @@ jobs:
       - name: Checkout testcase repo
         uses: actions/checkout@v2
         with:
-          repository: Testing-Cal/cypress-template
-          ref: master
+          repository: ${{ env.TESTCASE_REPO_PATH }}
+          ref: ${{ env.TESTCASEREPOSITORYBRANCH }}
           path: ./testcaseRepo
           
       - name: Functional Testing
@@ -162,7 +162,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: html-report
-          path: $REPORT_PATH
+          path: ${{ env.REPORT_PATH }}
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v1
