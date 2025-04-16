@@ -151,7 +151,6 @@ jobs:
             echo "current directory: $PWD"
             ls -al
             runCypressTest
-            report_path
             echo "REPORT_PATH=testcaseRepo/mochawesome-report" >> "$GITHUB_ENV"
             
           fi
