@@ -110,11 +110,11 @@ jobs:
           case "$TESTCASECOMMAND" in
             *env*)
                 echo 'case env'
-                $TESTCASECOMMAND applicationUrl=http://${host}$CONTEXT/ --browser $BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
+                $TESTCASECOMMAND applicationUrl=http://${liveurl}$CONTEXT/ --browser $BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
                 ;;
             *)
                 echo 'case else'
-                $TESTCASECOMMAND -- --env applicationUrl=http://${host}$CONTEXT/ --browser $BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
+                $TESTCASECOMMAND -- --env applicationUrl=http://${liveurl}$CONTEXT/ --browser $BROWSERTYPE --reporter mochawesome --reporter-options overwrite=false,html=false,json=true,charts=true
                 ;;
           esac
 
