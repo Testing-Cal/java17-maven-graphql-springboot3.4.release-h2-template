@@ -33,6 +33,7 @@ jobs:
           echo "ARTIFACTORY=$(echo "$JSON_STRING" | jq -r '.general.artifactory')"  >> "$GITHUB_ENV"
           echo "RELEASE_NAME=$(echo "$JSON_STRING" | jq -r '.general.name')"  >> "$GITHUB_ENV"
           echo "CONTEXT=$(echo "$JSON_STRING" | jq -r '.general.contextPath')" >> "$GITHUB_ENV"
+          echo "DEPLOYMENT_TYPE=$(echo "$JSON_STRING" | jq -r '.general.deploymentType')" >> "$GITHUB_ENV"
           
           echo "HELM_RELEASE_NAME=$(echo "$JSON_STRING" | jq -r '.general.helmReleaseName')" >> "$GITHUB_ENV"
           echo "KUBE_NAMESPACE=$(echo "$JSON_STRING" | jq -r '.kubernetes.namespace')" >> "$GITHUB_ENV"
@@ -141,6 +142,8 @@ jobs:
           if [[ "$TESTINGTOOLTYPE" == "selenium" ]]; then
             runSeleniumTest
           elif [[ "$TESTINGTOOLTYPE" == "cypress" ]]; then
+            echo "current directory: $PWD"
+            ls -al
             runCypressTest
           fi
         shell: bash
